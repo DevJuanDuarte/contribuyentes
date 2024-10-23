@@ -19,7 +19,8 @@
 
             @if (session('success'))
                 <div id="success-message"
-                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 mb-4 rounded relative" role="alert">
+                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 mb-4 rounded relative"
+                    role="alert">
                     <span class="block sm:inline">{{ session('success') }}</span>
                 </div>
             @endif
@@ -33,6 +34,8 @@
                     }
                 }, 2000); // 3000 milisegundos = 3 segundos
             </script>
+
+
 
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -130,6 +133,43 @@
                     <div class="mt-4 bg-white">
                         {{ $contribuyentes->links() }}
                     </div>
+
+                    @foreach ($contribuyentes as $contribuyente)
+                        <tr class="bg-white border-b">
+                            <!-- Nombres -->
+                            <td class="px-6 py-4 font-semibold text-gray-700">{{ $contribuyente->nombre_completo }}</td>
+
+                            <!-- Apellidos -->
+                            {{-- <td class="px-6 py-4 font-semibold text-gray-700">{{ $contribuyente->apellidos }}</td> --}}
+
+                            <!-- Conteo Nombres -->
+                            <td class="px-6 py-4">
+                                <strong class="text-blue-700 block mb-2">Conteo Nombres:</strong>
+                                <ul class="list-disc list-inside space-y-1">
+                                    @foreach ($contribuyente->conteo_letras['nombre_completo'] as $letra => $conteo)
+                                        <li class="text-gray-600">
+                                            <span class="font-medium text-blue-600">{{ $letra }}:</span>
+                                            <span class="ml-2">{{ $conteo }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </td>
+
+                            <!-- Conteo Apellidos -->
+                            {{-- <td class="px-6 py-4">
+                                <strong class="text-green-700 block mb-2">Conteo Apellidos:</strong>
+                                <ul class="list-disc list-inside space-y-1">
+                                    @foreach ($contribuyente->conteo_letras['apellidos'] as $letra => $conteo)
+                                        <li class="text-gray-600">
+                                            <span class="font-medium text-green-600">{{ $letra }}:</span>
+                                            <span class="ml-2">{{ $conteo }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </td> --}}
+                        </tr>
+                    @endforeach
+
                 </div>
             </div>
         </div>

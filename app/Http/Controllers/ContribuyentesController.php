@@ -5,15 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\Contribuyentes;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Helpers\StringHelper;
 
 class ContribuyentesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    // public function index()
+    // {
+    //     $contribuyentes = Contribuyentes::orderBy('id', 'desc')->paginate(10);
+    //     return view("contribuyentes.index", compact("contribuyentes"));
+    // }
     public function index()
     {
         $contribuyentes = Contribuyentes::orderBy('id', 'desc')->paginate(10);
+
+        // Contar las letras de nombres y apellidos de cada contribuyente
+        foreach ($contribuyentes as $contribuyente) {
+            $contribuyente->conteo_letras = [
+                'nombres' => StringHelper::contarLetras($contribuyente->nombres),
+                'apellidos' => StringHelper::contarLetras($contribuyente->apellidos),
+                'nombre_completo' => StringHelper::contarLetras($contribuyente->nombre_completo),
+            ];
+        }
+
         return view("contribuyentes.index", compact("contribuyentes"));
     }
 
@@ -91,6 +107,19 @@ class ContribuyentesController extends Controller
         return view('contribuyentes.edit', compact('contribuyente'));
 
     }
+
+    // public function edit($id)
+    // {
+    //     $contribuyente = Contribuyentes::findOrFail($id);
+
+    //     // Contar las letras de nombres y apellidos
+    //     $contribuyente->conteo_letras = [
+    //         'nombres' => StringHelper::contarLetras($contribuyente->nombres),
+    //         'apellidos' => StringHelper::contarLetras($contribuyente->apellidos),
+    //     ];
+
+    //     return view('contribuyentes.edit', compact('contribuyente'));
+    // }
 
     /**
      * Update the specified resource in storage.
