@@ -13,34 +13,56 @@
                     href="{{ route('usuarios.create') }}">Crear Usuario</a>
             </div>
 
-
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+                <div class="p-6 text-gray-900" x-data="{
+                    usuarios: @js($usuarios->items()),
+                    search: {
+                        nombre: '',
+                        email: ''
+                    },
+                    get filteredUsuarios() {
+                        return this.usuarios.filter(usuario => {
+                            return (
+                                usuario.name.toLowerCase().includes(this.search.nombre.toLowerCase()) &&
+                                usuario.email.toLowerCase().includes(this.search.email.toLowerCase())
+                            )
+                        })
+                    }
+                }">
+                    <div class="mb-4">
+                    </div>
                     <div class="relative overflow-x-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3">Nombre</th>
-                                    <th scope="col" class="px-6 py-3">Email</th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Nombre
+                                        <input type="text" x-model="search.nombre"
+                                            class="mt-1 block w-full text-xs border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                            placeholder="Buscar...">
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                      Email
+                                      <input type="text" x-model="search.email"
+                                          class="mt-1 block w-full text-xs border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                          placeholder="Buscar...">
+                                  </th>
                                     <th scope="col" class="px-6 py-3">Rol</th>
                                     <th scope="col" class="px-6 py-3">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($usuarios as $usuario)
+                                <template x-for="usuario in filteredUsuarios" :key="usuario.id">
                                     <tr class="bg-white border-b">
-                                        <td class="px-6 py-4">{{ $usuario->name }}</td>
-                                        <td class="px-6 py-4">{{ $usuario->email }}</td>
-                                        <td class="px-6 py-4">
-                                            {{ $usuario->roles->first()->name ?? 'Sin rol' }}
-                                        </td>
+                                        <td class="px-6 py-4" x-text="usuario.name"></td>
+                                        <td class="px-6 py-4" x-text="usuario.email"></td>
+                                        <td class="px-6 py-4" x-text="usuario.roles[0]?.name ?? 'Sin rol'"></td>
                                         @role('superadmin')
                                             <td class="px-6 py-4 h-full">
                                                 <div class="flex items-center justify-center">
-                                                    <a href="{{ route('usuarios.edit', $usuario->id) }}"
+                                                    <a :href="`/usuarios/${usuario.id}/edit`"
                                                         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Editar</a>
-                                                    <form action="{{ route('usuarios.destroy', $usuario->id) }}"
-                                                        method="POST" class="inline">
+                                                    <form :action="`/usuarios/${usuario.id}`" method="POST" class="inline">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit"
@@ -50,7 +72,7 @@
                                             </td>
                                         @endrole
                                     </tr>
-                                @endforeach
+                                </template>
                             </tbody>
                         </table>
 
