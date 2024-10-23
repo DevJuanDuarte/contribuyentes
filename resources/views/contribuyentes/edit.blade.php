@@ -111,11 +111,22 @@
               </div>
 
               {{-- Botón --}}
-              <div class="flex justify-center">
+              {{-- <div class="flex justify-center">
                   <button type="submit"
-                      class="text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Guardar
+                      class="text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Actualizar
                       Contribuyente</button>
-              </div>
+              </div> --}}
+              <div class="flex justify-between">
+                <button type="submit"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                    Actualizar Contribuyente
+                </button>
+
+                <a href="{{ route('contribuyentes.index') }}"
+                    class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">
+                    Cancelar
+                </a>
+            </div>
           </form>
       </div>
   </div>
