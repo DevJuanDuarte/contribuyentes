@@ -13,7 +13,7 @@ class ContribuyentesController extends Controller
      */
     public function index()
     {
-        $contribuyentes = Contribuyentes::paginate(10);
+        $contribuyentes = Contribuyentes::orderBy('id', 'desc')->paginate(10);
         return view("contribuyentes.index", compact("contribuyentes"));
     }
 
@@ -32,18 +32,30 @@ class ContribuyentesController extends Controller
     public function store(Request $request)
     {
         // Validar la solicitud
-        $request->validate([
+        $rules = [
             'tipo_documento' => 'required|max:255',
             'documento' => 'required|max:255',
-            'nombres' => 'required|max:255',
-            'apellidos' => 'required|max:255',
             'direccion' => 'required|max:255',
             'telefono' => 'required|max:255',
             'celular' => 'required|max:255',
             'email' => 'required|max:255'
-        ]);
+        ];
 
-        // Crear el contribuyente y asignar el usuario logueado
+        // Validar nombres y apellidos según el tipo de documento
+        if ($request->tipo_documento === 'NIT') {
+            $rules['nombres'] = 'required';
+            $rules['apellidos'] = 'required';
+        } else {
+            $rules['nombres'] = 'required|max:255';
+            $rules['apellidos'] = 'required|max:255';
+        }
+
+        $request->validate($rules);
+
+        // Si es NIT, los campos nombres y apellidos ya vendrán separados
+        // gracias a la lógica del frontend
+
+        // Crear el contribuyente
         $contribuyente = Contribuyentes::create([
             'tipo_documento' => $request->tipo_documento,
             'documento' => $request->documento,
@@ -57,8 +69,8 @@ class ContribuyentesController extends Controller
             'nombre_completo' => "{$request->nombres} {$request->apellidos}",
         ]);
 
-        // Redirigir o responder
-        return redirect()->route('contribuyentes.index')->with('success', 'Contribuyente creado exitosamente.');
+        return redirect()->route('contribuyentes.index')
+            ->with('success', 'Contribuyente creado exitosamente.');
     }
 
 
@@ -85,17 +97,28 @@ class ContribuyentesController extends Controller
      */
     public function update(Request $request, Contribuyentes $contribuyente)
     {
-        $request->validate([
+        // Validar la solicitud
+        $rules = [
             'tipo_documento' => 'required|max:255',
             'documento' => 'required|max:255',
-            'nombres' => 'required|max:255',
-            'apellidos' => 'required|max:255',
             'direccion' => 'required|max:255',
             'telefono' => 'required|max:255',
             'celular' => 'required|max:255',
             'email' => 'required|max:255'
-        ]);
+        ];
 
+        // Validar nombres y apellidos según el tipo de documento
+        if ($request->tipo_documento === 'NIT') {
+            $rules['nombres'] = 'required';
+            $rules['apellidos'] = 'required';
+        } else {
+            $rules['nombres'] = 'required|max:255';
+            $rules['apellidos'] = 'required|max:255';
+        }
+
+        $request->validate($rules);
+
+        // Actualizar el contribuyente
         $contribuyente->update([
             'tipo_documento' => $request->tipo_documento,
             'documento' => $request->documento,
@@ -106,9 +129,12 @@ class ContribuyentesController extends Controller
             'celular' => $request->celular,
             'email' => $request->email,
             'nombre_completo' => "{$request->nombres} {$request->apellidos}",
-         ]);
-        return redirect()->route('contribuyentes.index')->with('success', 'Contribuyente actualizado exitosamente');
+        ]);
+
+        return redirect()->route('contribuyentes.index')
+            ->with('success', 'Contribuyente actualizado exitosamente.');
     }
+
 
     /**
      * Remove the specified resource from storage.
