@@ -18,6 +18,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Protege las rutas de authors con el middleware de roles
+    // Route::middleware(['auth'])->group(function () {
+    //     Route::resource('contribuyentes', App\Http\Controllers\ContribuyentesController::class);
+    //     Route::resource('usuarios', UserController::class);
+
+    // });
+
     Route::resource('contribuyentes', ContribuyentesController::class);
 
     Route::resource('usuarios', UserController::class);
@@ -25,4 +32,4 @@ Route::middleware('auth')->group(function () {
 
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
