@@ -6,6 +6,9 @@
     </x-slot>
 
     <div class="py-6">
+
+
+
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @role('superadmin')
                 <div class="flex justify-center md:justify-start">
@@ -13,6 +16,24 @@
                         href="{{ route('contribuyentes.create') }}">Crear Contribuyente</a>
                 </div>
             @endrole
+
+            @if (session('success'))
+                <div id="success-message"
+                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 mb-4 rounded relative" role="alert">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+            @endif
+
+            <script>
+                // Espera 3 segundos y luego oculta el mensaje
+                setTimeout(function() {
+                    var successMessage = document.getElementById('success-message');
+                    if (successMessage) {
+                        successMessage.style.display = 'none';
+                    }
+                }, 2000); // 3000 milisegundos = 3 segundos
+            </script>
+
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
