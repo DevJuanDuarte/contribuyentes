@@ -4,63 +4,65 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        $usuarios = User::paginate(10); // Cambia 10 por el número de usuarios que desees por página
+        $usuarios = User::with('roles')->paginate(10);
         return view("usuarios.index", compact("usuarios"));
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view("usuarios.create");
+        return view('usuarios.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
-    }
+        \Log::info('Datos recibidos:', $request->all());
+        try {
+            // 1. Validación
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                'role' => 'required|in:superadmin,administrador',
+            ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
+            DB::beginTransaction();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
-    }
+            // 2. Crear usuario
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+            ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
+            // 3. Asignar rol
+            if (!$user->hasRole($validated['role'])) {
+                $user->assignRole($validated['role']);
+            }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
+            DB::commit();
+
+            // 4. Redireccionar con mensaje de éxito
+            return redirect()
+                ->route('usuarios.index')
+                ->with('success', 'Usuario creado exitosamente.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al crear usuario: ' . $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Error al crear el usuario: ' . $e->getMessage());
+        }
     }
 }
