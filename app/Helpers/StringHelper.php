@@ -13,10 +13,10 @@ class StringHelper
         }
 
         // Tomamos el primer carácter de la cadena y lo convertimos en mayúscula
-        $letra = strtoupper($string[0]);
+        $letra = mb_strtoupper(mb_substr($string, 0, 1));
 
-        // Solo procesamos letras (ignoramos espacios y caracteres especiales)
-        if (ctype_alpha($letra)) {
+        // Solo procesamos letras, incluyendo letras con tildes y la ñ
+        if (preg_match('/^[A-ZÁÉÍÓÚÑ]$/u', $letra)) {
             // Incrementamos el contador de esa letra
             if (isset($resultado[$letra])) {
                 $resultado[$letra]++;
@@ -26,6 +26,6 @@ class StringHelper
         }
 
         // Llamada recursiva con el resto de la cadena
-        return self::contarLetras(substr($string, 1), $resultado);
+        return self::contarLetras(mb_substr($string, 1), $resultado);
     }
 }
